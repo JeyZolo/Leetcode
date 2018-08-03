@@ -255,3 +255,29 @@ class LRUCache {
  * int param_1 = obj.get(key);
  * obj.put(key,value);
  */
+/*kth largest value in BST*/
+class Solution {
+    int count = 0;
+    Stack<Integer> stack = new Stack<>();
+    public int kthSmallest(TreeNode root, int k) {
+
+        findKthSmall(root, k);
+        return stack.pop();
+    }
+    
+    public void findKthSmall (TreeNode node, int k) {
+        if (node == null)
+            return;
+        if(count >= k) return;
+        findKthSmall (node.right, k);
+        
+        if(count < k) {
+          stack.push(node.val);count++;  
+        }else {
+            return;
+        }
+        
+        findKthSmall (node.left, k);
+        
+    }
+}
