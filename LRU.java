@@ -281,3 +281,48 @@ class Solution {
         
     }
 }
+
+class Solution {
+    public int getCombinantions (int n) {
+        int res = 0;
+        int[] dp = new int[n];
+        if (n < 2) return n;
+        dp[0] = 1;
+        dp[1] = 2;
+
+        for (int i = 2; i < n; i++) {
+            dp[i] = dp[i-2] + dp[i-1];
+        }
+        return dp[n-1];
+    }
+}
+/*
+3. one puzzle on time and distance .. couldnt remember it sorry,
+*/
+
+/*
+4. implement a single linked list , simple one :) 
+*/
+class ListNode {
+    int val;
+    ListNode next;
+    public ListNode (int val) {
+        this.val = val;
+        next = null;
+    }
+}
+/* 
+in-order traverse a binary tree  
+*/
+
+class Solution {
+    public void inorderSearch( TreeNode node) {
+        if (node == null)
+            return;
+
+        inorderSearch(node.left);
+        System.out.println(node.val);
+        inorderSearch(node.right);
+
+    }
+}
