@@ -117,7 +117,7 @@ class WordSearch{
         }
         return prefix;
     }
-// mehod 2:
+//----------------- mehod 2:
     public List<String> findWords(char[][] board, String[] words) {
     List<String> res = new ArrayList<>();
     TrieNode root = buildTrie(words);
@@ -145,7 +145,7 @@ public void dfs(char[][] board, int i, int j, TrieNode p, List<String> res) {
     if (j < board[0].length - 1) dfs(board, i, j + 1, p, res); 
     board[i][j] = c;
 }
-trieNode
+//------------------trieNode
 public TrieNode buildTrie(String[] words) {
     TrieNode root = new TrieNode();
     for (String w : words) {
@@ -166,53 +166,6 @@ class TrieNode {
 }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
