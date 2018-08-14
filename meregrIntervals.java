@@ -23,6 +23,10 @@ Explanation: Intervals [1,4] and [4,5] are considerred overlapping.
  *     Interval(int s, int e) { start = s; end = e; }
  * }
  */
+/*
+use PQ to store intervals and then search from head, if cannot merge head two, list add the head, then push the second into PQ again;
+
+*/
 class Solution {
     public List<Interval> merge(List<Interval> list) {
         
@@ -61,6 +65,70 @@ class Solution {
         return res;
     }
 }
-/*public List<Interval> mergeTwoInterval(List<Interval> list1, List<Interval> list2) {
-            
-    }*/
+/*349. Intersection of Two Arrays
+DescriptionHintsSubmissionsDiscussSolution
+Given two arrays, write a function to compute their intersection.
+
+Example 1:
+
+Input: nums1 = [1,2,2,1], nums2 = [2,2]
+Output: [2]
+Example 2:
+
+Input: nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+Output: [9,4]
+Note:
+
+Each element in the result must be unique.
+The result can be in any order.*/
+//o(n)
+class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        // sort them then find common elements
+        //hashmap to store elements of nums1, then loop nums2 to find elements in nums1
+        HashMap<Integer,Integer> map = new HashMap<>();
+        
+        for (int i = 0; i < nums1.length; i++) {
+            if (map.containsKey(nums1[i])) continue;
+            map.put(nums1[i], 1);
+        }
+        
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < nums2.length; i++) {
+            if (map.containsKey(nums2[i]))
+                set.add(nums2[i]);
+        }
+        int[] res = new int[set.size()];int i = 0;
+        for (Integer num : set) {
+            res[i++] = num;
+        }
+        return res;
+    }
+}
+//O(nlogn)
+public class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        Set<Integer> set = new HashSet<>();
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        int i = 0;
+        int j = 0;
+        while (i < nums1.length && j < nums2.length) {
+            if (nums1[i] < nums2[j]) {
+                i++;
+            } else if (nums1[i] > nums2[j]) {
+                j++;
+            } else {
+                set.add(nums1[i]);
+                i++;
+                j++;
+            }
+        }
+        int[] result = new int[set.size()];
+        int k = 0;
+        for (Integer num : set) {
+            result[k++] = num;
+        }
+        return result;
+    }
+}
