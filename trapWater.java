@@ -98,3 +98,161 @@ class Solution {
     }
     
 }
+/*
+49. Group Anagrams
+DescriptionHintsSubmissionsDiscussSolution
+Given an array of strings, group anagrams together.
+
+Example:
+
+Input: ["eat", "tea", "tan", "ate", "nat", "bat"],
+Output:
+[
+  ["ate","eat","tea"],
+  ["nat","tan"],
+  ["bat"]
+]
+Note:
+
+All inputs will be in lowercase.
+The order of your output does not matter.*/
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        if (strs == null || strs.length == 0) return new ArrayList<List<String>>();
+        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        for (String s : strs) {
+            char[] ca = s.toCharArray();
+            Arrays.sort(ca);
+            String keyStr = String.valueOf(ca);
+            if (!map.containsKey(keyStr)) map.put(keyStr, new ArrayList<String>());
+            map.get(keyStr).add(s);
+        }
+        return new ArrayList<List<String>>(map.values()); 
+    }
+}
+
+/*
+347. Top K Frequent Elements
+DescriptionHintsSubmissionsDiscussSolution
+Given a non-empty array of integers, return the k most frequent elements.
+
+Example 1:
+
+Input: nums = [1,1,1,2,2,3], k = 2
+Output: [1,2]
+Example 2:
+
+Input: nums = [1], k = 1
+Output: [1]
+Note:
+
+You may assume k is always valid, 1 ≤ k ≤ number of unique elements.
+Your algorithm's time complexity must be better than O(n log n), where n is the array's size.*/
+//==1== Useing Heap
+
+class Solution {
+    class Interval {
+    int key;
+    int freq;
+    public Interval (int key,int freq) {
+        this.key = key;
+        this.freq = freq;
+    }
+    }
+    public List<Integer> topKFrequent(int[] nums, int k) {
+        
+        List<Integer> res = new ArrayList<>();
+        if (nums == null || nums.length == 0) return res;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        
+        for (int i = 0; i < nums.length; i++) {
+            if(!map.containsKey(nums[i])) {
+                map.put(nums[i], 1);
+            }
+            map.put(nums[i], map.get(nums[i])+1);
+        }
+        PriorityQueue<Interval> pq = new PriorityQueue<>(map.size(), new Comparator<Interval>(){
+            @Override 
+            public int compare(Interval o1, Interval o2) {
+                return o2.freq - o1.freq;
+            }
+        });
+        for (Map.Entry<Integer,Integer> pair : map.entrySet()) {
+            Interval ex = new Interval (pair.getKey(),pair.getValue());
+            pq.offer(ex);
+        }
+        while (!pq.isEmpty() && k-- > 0) {
+            res.add(pq.poll().key);
+        }
+        return res;
+
+        
+    }
+}
+// bucket sort
+class Solution {
+    public List<Integer> topKFrequent(int[] nums, int k) {
+        List<Integer> res = new ArrayList<>();
+        if(nums == null || nums.length == 0) return res;
+        //use bucket to store num with the same freq, and then add it to res list
+        List<Integer>[] bucket = new List[nums.length + 1];
+        HashMap<Integer, Integer> map = new HashMap<>();
+        
+        for (int i = 0; i < nums.length; i++) {
+            if(!map.containsKey(nums[i])) {
+                map.put(nums[i], 0);// line13 add freq
+            }
+            map.put(nums[i], map.get(nums[i])+1);
+        }
+        for (Map.Entry<Integer,Integer> pair : map.entrySet()) {
+            int freq = pair.getValue();
+            
+            if(bucket[freq] == null) {
+                bucket[freq] = new ArrayList<>();
+            }
+            bucket[freq].add(pair.getKey());
+        }
+        for (int i = nums.length; i > 0 && k > 0; i--) {
+            if (bucket[i] == null) continue;
+            for (Integer num : bucket[i]){
+                res.add(num);
+                k--;
+                if (k <= 0) return res;
+            }
+        }
+        return res;
+        
+    }
+}
+/*
+151. Reverse Words in a String
+DescriptionHintsSubmissionsDiscussSolution
+Given an input string, reverse the string word by word.
+
+Example:  
+
+Input: "the sky is blue",
+Output: "blue is sky the".
+Note:
+
+A word is defined as a sequence of non-space characters.
+Input string may contain leading or trailing spaces. However, your reversed string should not contain leading or trailing spaces.
+You need to reduce multiple spaces between two words to a single space in the reversed string.
+Follow up: For C programmers, try to solve it in-place in O(1) space.*/
+public class Solution {
+    public String reverseWords(String s) {
+        int len = s.length();
+        String[] arr = s.trim().split("\\s+");
+        if (s == null || s.length() == 0) return s;
+        
+        StringBuilder res = new StringBuilder();
+        
+        for (int i = arr.length - 1; i >= 0; i--) {
+            res.append(arr[i] + " ");
+           //System.out.println(res);
+        }
+        return res.substring(0, res.length() -1);
+        
+    }
+}
+
