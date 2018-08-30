@@ -160,4 +160,141 @@ class Solution {
             
         }
     }
+}/*
+359. Logger Rate Limiter
+DescriptionHintsSubmissionsDiscussSolution
+Design a logger system that receive stream of messages along with its timestamps, each message should be printed if and only if it is not printed in the last 10 seconds.
+
+Given a message and a timestamp (in seconds granularity), return true if the message should be printed in the given timestamp, otherwise returns false.
+
+It is possible that several messages arrive roughly at the same time.
+
+Example:
+
+Logger logger = new Logger();
+
+// logging string "foo" at timestamp 1
+logger.shouldPrintMessage(1, "foo"); returns true; 
+
+// logging string "bar" at timestamp 2
+logger.shouldPrintMessage(2,"bar"); returns true;
+
+// logging string "foo" at timestamp 3
+logger.shouldPrintMessage(3,"foo"); returns false;
+
+// logging string "bar" at timestamp 8
+logger.shouldPrintMessage(8,"bar"); returns false;
+
+// logging string "foo" at timestamp 10
+logger.shouldPrintMessage(10,"foo"); returns false;
+
+// logging string "foo" at timestamp 11
+logger.shouldPrintMessage(11,"foo"); returns true;
+*/
+class Logger {
+
+    /** Initialize your data structure here. */
+    HashMap<String, Integer> map;
+    public Logger() {
+        map =  new HashMap<>();
+    }
+    
+    /** Returns true if the message should be printed in the given timestamp, otherwise returns false.
+        If this method returns false, the message will not be printed.
+        The timestamp is in seconds granularity. */
+    public boolean shouldPrintMessage(int timestamp, String message) {
+        if (!map.containsKey(message)){
+            map.put(message, timestamp);
+            return true;
+        }else {
+            int time = map.get(message);
+            if(timestamp - time < 10){
+                return false;
+            }
+            map.put(message,timestamp);
+            return true;
+        }
+    }
+}
+
+/**
+ * Your Logger object will be instantiated and called as such:
+ * Logger obj = new Logger();
+ * boolean param_1 = obj.shouldPrintMessage(timestamp,message);
+ */
+ /*189. Rotate Array
+DescriptionHintsSubmissionsDiscussSolution
+Given an array, rotate the array to the right by k steps, where k is non-negative.
+
+Example 1:
+
+Input: [1,2,3,4,5,6,7] and k = 3
+Output: [5,6,7,1,2,3,4]
+Explanation:
+rotate 1 steps to the right: [7,1,2,3,4,5,6]
+rotate 2 steps to the right: [6,7,1,2,3,4,5]
+rotate 3 steps to the right: [5,6,7,1,2,3,4]
+Example 2:
+
+Input: [-1,-100,3,99] and k = 2
+Output: [3,99,-1,-100]
+Explanation: 
+rotate 1 steps to the right: [99,-1,-100,3]
+rotate 2 steps to the right: [3,99,-1,-100]
+*/class Solution {
+    public void rotate(int[] nums, int k) {
+        k %= nums.length;
+        reverse(nums, 0, nums.length - 1);
+        reverse(nums, 0, k - 1);
+        reverse(nums, k, nums.length - 1);
+}
+
+    public void reverse(int[] nums, int start, int end) {
+    while (start < end) {
+        int temp = nums[start];
+        nums[start] = nums[end];
+        nums[end] = temp;
+        start++;
+        end--;
+    
+
+    }
+}
+}
+/*
+266. Palindrome Permutation
+DescriptionHintsSubmissionsDiscussSolution
+Given a string, determine if a permutation of the string could form a palindrome.
+
+Example 1:
+
+Input: "code"
+Output: false
+Example 2:
+
+Input: "aab"
+Output: true
+Example 3:
+
+Input: "carerac"
+Output: true
+*/
+class Solution {
+    public boolean canPermutePalindrome(String s) {
+        int[] arr = new int[256];
+        
+        for (char c : s.toCharArray()) {
+            arr[c]++;
+        }
+        int mark = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if(arr[i] %2 == 0) continue;
+            if(mark == 1) {
+                return false;
+            }else {
+                mark = 1;
+            }
+        }
+        return true;
+    }
 }
