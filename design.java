@@ -396,3 +396,146 @@ class MyStack {
  * int param_3 = obj.top();
  * boolean param_4 = obj.empty();
  */
+/*
+284. Peeking Iterator
+DescriptionHintsSubmissionsDiscussSolution
+Given an Iterator class interface with methods: next() and hasNext(), design and implement a PeekingIterator that support the peek() operation -- it essentially peek() at the element that will be returned by the next call to next().
+
+Example:
+
+Assume that the iterator is initialized to the beginning of the list: [1,2,3].
+
+Call next() gets you 1, the first element in the list.
+Now you call peek() and it returns 2, the next element. Calling next() after that still return 2. 
+You call next() the final time and it returns 3, the last element. 
+Calling hasNext() after that should return false.
+Follow up: How would you extend your design to be generic and work with all types, not just integer?*/
+// Java Iterator interface reference:
+// https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html
+//--method 1
+class PeekingIterator implements Iterator<Integer> {  
+    private Integer next = null;
+    private Iterator<Integer> iter;
+
+    public PeekingIterator(Iterator<Integer> iterator) {
+        // initialize any member here.
+        iter = iterator;
+        if (iter.hasNext())
+            next = iter.next();
+    }
+    
+    // Returns the next element in the iteration without advancing the iterator. 
+    public Integer peek() {
+        return next; 
+    }
+
+    // hasNext() and next() should behave the same as in the Iterator interface.
+    // Override them if needed.
+    @Override
+    public Integer next() {
+        Integer res = next;
+        next = iter.hasNext() ? iter.next() : null;
+        return res; 
+    }
+
+    @Override
+    public boolean hasNext() {
+        return next != null;
+    }
+}
+//-----method 2
+// Java Iterator interface reference:
+// https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html
+class PeekingIterator implements Iterator<Integer> {
+    Queue<Integer> queue;
+	public PeekingIterator(Iterator<Integer> iterator) {
+	    // initialize any member here.
+        queue = new LinkedList<>();
+        while (iterator.hasNext()) {
+            queue.offer(iterator.next());
+        }
+	    
+	}
+
+    // Returns the next element in the iteration without advancing the iterator.
+	public Integer peek() {
+        return queue.peek();
+	}
+
+	// hasNext() and next() should behave the same as in the Iterator interface.
+	// Override them if needed.
+	@Override
+	public Integer next() {
+	    return queue.poll();
+	}
+
+	@Override
+	public boolean hasNext() {
+	    return !queue.isEmpty();
+	}
+}
+/*
+215. Kth Largest Element in an Array
+DescriptionHintsSubmissionsDiscussSolution
+Find the kth largest element in an unsorted array. Note that it is the kth largest element in the sorted order, not the kth distinct element.
+
+Example 1:
+
+Input: [3,2,1,5,6,4] and k = 2
+Output: 5
+Example 2:
+
+Input: [3,2,3,1,2,4,5,5,6] and k = 4
+Output: 4
+*/
+class Solution {
+    public int findKthLargest(int[] nums, int k) {
+        int len = nums.length;
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        for (int num : nums)
+            pq.offer(num);
+        
+        int count = len - k;
+        while (count-- != 0) {
+            pq.poll();
+        }
+        return pq.poll();
+    }
+}
+/*
+695. Max Area of Island
+DescriptionHintsSubmissionsDiscussSolution
+Given a non-empty 2D array grid of 0's and 1's, an island is a group of 1's (representing land) connected 4-directionally (horizontal or vertical.) You may assume all four edges of the grid are surrounded by water.
+
+Find the maximum area of an island in the given 2D array. (If there is no island, the maximum area is 0.)
+
+Example 1:
+[[0,0,1,0,0,0,0,1,0,0,0,0,0],
+ [0,0,0,0,0,0,0,1,1,1,0,0,0],
+ [0,1,1,0,1,0,0,0,0,0,0,0,0],
+ [0,1,0,0,1,1,0,0,1,0,1,0,0],
+ [0,1,0,0,1,1,0,0,1,1,1,0,0],
+ [0,0,0,0,0,0,0,0,0,0,1,0,0],
+ [0,0,0,0,0,0,0,1,1,1,0,0,0],
+ [0,0,0,0,0,0,0,1,1,0,0,0,0]]
+Given the above grid, return 6. Note the answer is not 11, because the island must be connected 4-directionally.
+Example 2:
+[[0,0,0,0,0,0,0,0]]
+Given the above grid, return 0.*/
+class Solution {
+    public int maxAreaOfIsland(int[][] grid) {
+        int max_area = 0;
+        for(int i = 0; i < grid.length; i++)
+            for(int j = 0; j < grid[0].length; j++)
+                if(grid[i][j] == 1)max_area = Math.max(max_area, AreaOfIsland(grid, i, j));
+        return max_area;
+    }
+    
+    public int AreaOfIsland(int[][] grid, int i, int j){
+        if( i >= 0 && i < grid.length && j >= 0 && j < grid[0].length && grid[i][j] == 1){
+            grid[i][j] = 0;
+            return 1 + AreaOfIsland(grid, i+1, j) + AreaOfIsland(grid, i-1, j) + AreaOfIsland(grid, i, j-1) + AreaOfIsland(grid, i, j+1);
+        }
+        return 0;
+    }
+}
