@@ -120,5 +120,88 @@ class Solution {
         return num > 0 && (num & (num - 1)) == 0 && (num - 1) % 3 == 0;
     }
 }
+/*
+
+New Playground
+jing76
+186. Reverse Words in a String II
+DescriptionHintsSubmissionsDiscussSolution
+Given an input string , reverse the string word by word. 
+
+Example:
+
+Input:  ["t","h","e"," ","s","k","y"," ","i","s"," ","b","l","u","e"]
+Output: ["b","l","u","e"," ","i","s"," ","s","k","y"," ","t","h","e"]
+Note: 
+
+A word is defined as a sequence of non-space characters.
+The input string does not contain leading or trailing spaces.
+The words are always separated by a single space.
+Follow up: Could you do it in-place without allocating extra space?*/
+class Solution {
+    public void reverseWords(char[] str) {
+        int len = str.length;
+        
+        //reverse the array then, reverse every word
+        reverseWord(str, 0, len-1);
+        //reverse every word
+        int i = 0;
+        while (i < len) {
+            int j = i;
+            while (j < len && str[j] != ' '){
+                j++;
+            }
+            reverseWord(str, i, j - 1);
+            i = j+1;
+        }
+        
+    }
+    public void reverseWord(char [] str, int low , int high) {
+        //int low = 0, high = len - 1;
+        while (low < high) {
+            char t = str[low];
+            str[low] = str[high];
+            str[high] = t;
+            low++;
+            high--;
+        }
+    }
+}
+/*
+557. Reverse Words in a String III
+DescriptionHintsSubmissionsDiscussSolution
+Given a string, you need to reverse the order of characters in each word within a sentence while still preserving whitespace and initial word order.
+
+Example 1:
+Input: "Let's take LeetCode contest"
+Output: "s'teL ekat edoCteeL tsetnoc"
+Note: In the string, each word is separated by single space and there will not be any extra space in the string.*/class Solution {
+    public String reverseWords(String s) {
+        //to char array
+        
+        char[] str = s.toCharArray();
+        int i = 0, j = 0;
+        while (i < s.length()) {
+             j = i;
+            while (j < s.length() && str[j] != ' ') {
+                j++;
+            }
+            reverseStr(str, i, j -1);
+            i = j+1;
+        }
+        return String.valueOf(str);
+    }
+    public void reverseStr(char[] s, int i, int j) {
+        
+        while (i < j) {
+            char t = s[i];
+            s[i] = s[j];
+            s[j] = t;
+            i ++;
+            j --;
+        }
+        
+    }
+}
 
 
