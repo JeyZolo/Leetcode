@@ -202,6 +202,273 @@ Note: In the string, each word is separated by single space and there will not b
         }
         
     }
+}/*
+224. Basic Calculator
+DescriptionHintsSubmissionsDiscussSolution
+Implement a basic calculator to evaluate a simple expression string.
+
+The expression string may contain open ( and closing parentheses ), the plus + or minus sign -, non-negative integers and empty spaces .
+
+Example 1:
+
+Input: "1 + 1"
+Output: 2
+Example 2:
+
+Input: " 2-1 + 2 "
+Output: 3
+Example 3:
+
+Input: "(1+(4+5+2)-3)+(6+8)"
+Output: 23
+Note:
+You may assume that the given expression is always valid.
+Do not use the eval built-in library function.*/
+class Solution {
+    public int calculate(String s) {
+        // change all - before (  to opsite marks
+        //use stack to store the res and sign befoe (), cuz if calcute the res in (), 
+        //it all new res as a num, so we need the previous res and pre sign for it
+        Stack<Integer> stack = new Stack<>();
+        int sign = 1;int num = 0, res = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (Character.isDigit(c)) {
+                num = 10 * num + c - '0';
+            }else if (c == '+') {
+                res += sign * num;
+                sign = 1;
+                num = 0;
+            }else if (c == '-') {
+                res += sign * num;
+                sign = -1;
+                num = 0;
+            }else if (c == '(') {
+                stack.push(res);
+                stack.push(sign);
+                res = 0;
+                sign = 1;
+                num = 0;
+            }else if (c == ')') {
+            	//add the last num before )
+                res += sign * num;
+                //add the res before (
+                res = stack.pop() * res + stack.pop();
+                sign = 1;
+                num = 0;
+            }
+        }
+        if (num != 0)
+             res += sign * num;
+        return res;
+    }
+}
+/*
+339. Nested List Weight Sum
+DescriptionHintsSubmissionsDiscussSolution
+Given a nested list of integers, return the sum of all integers in the list weighted by their depth.
+
+Each element is either an integer, or a list -- whose elements may also be integers or other lists.
+
+Example 1:
+
+Input: [[1,1],2,[1,1]]
+Output: 10 
+Explanation: Four 1's at depth 2, one 2 at depth 1.
+Example 2:
+
+Input: [1,[4,[6]]]
+Output: 27 
+Explanation: One 1 at depth 1, one 4 at depth 2, and one 6 at depth 3; 1 + 4*2 + 6*3 = 27.*/
+/**
+ * // This is the interface that allows for creating nested lists.
+ * // You should not implement it, or speculate about its implementation
+ * public interface NestedInteger {
+ *     // Constructor initializes an empty nested list.
+ *     public NestedInteger();
+ *
+ *     // Constructor initializes a single integer.
+ *     public NestedInteger(int value);
+ *
+ *     // @return true if this NestedInteger holds a single integer, rather than a nested list.
+ *     public boolean isInteger();
+ *
+ *     // @return the single integer that this NestedInteger holds, if it holds a single integer
+ *     // Return null if this NestedInteger holds a nested list
+ *     public Integer getInteger();
+ *
+ *     // Set this NestedInteger to hold a single integer.
+ *     public void setInteger(int value);
+ *
+ *     // Set this NestedInteger to hold a nested list and adds a nested integer to it.
+ *     public void add(NestedInteger ni);
+ *
+ *     // @return the nested list that this NestedInteger holds, if it holds a nested list
+ *     // Return null if this NestedInteger holds a single integer
+ *     public List<NestedInteger> getList();
+ * }
+ */
+//recursion
+class Solution {
+    int sum = 0;
+    public int depthSum(List<NestedInteger> nestedList) {
+        sum = 0;
+        getSumList(nestedList, 1);
+        return sum;
+    }
+    public void getSumList(List<NestedInteger> nestedList, int dept) {
+        
+        //get the element of list
+        for (NestedInteger n:  nestedList) {
+            if (n.isInteger()) {
+                sum = sum + n.getInteger() * dept;
+            }else {
+                getSumList(n.getList(), dept+1);
+            }
+            
+        }
+    }
+}
+//Itertive- BFS
+class Solution {
+    public int depthSum(List<NestedInteger> nestedList) {
+        //use BFS
+        if(nestedList == null) {
+            return 0;
+        }
+        int sum = 0, level = 1;
+        Queue<NestedInteger> queue = new LinkedList<>();
+        queue.addAll(nestedList);
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                NestedInteger n = queue.poll();
+                if (n.isInteger()) {
+                    sum += level * n.getInteger();
+                }else {
+                    queue.addAll(n.getList());
+                }
+            }
+            level++;
+        }
+        return sum;
+        
+    }
+}
+/*
+364. Nested List Weight Sum II
+DescriptionHintsSubmissionsDiscussSolution
+Given a nested list of integers, return the sum of all integers in the list weighted by their depth.
+
+Each element is either an integer, or a list -- whose elements may also be integers or other lists.
+
+Different from the previous question where weight is increasing from root to leaf, now the weight is defined from bottom up. i.e., the leaf level integers have weight 1, and the root level integers have the largest weight.
+
+Example 1:
+
+Input: [[1,1],2,[1,1]]
+Output: 8 
+Explanation: Four 1's at depth 1, one 2 at depth 2.
+Example 2:
+
+Input: [1,[4,[6]]]
+Output: 17 
+Explanation: One 1 at depth 3, one 4 at depth 2, and one 6 at depth 1; 1*3 + 4*2 + 6*1 = 17.*/
+/**
+ * // This is the interface that allows for creating nested lists.
+ * // You should not implement it, or speculate about its implementation
+ * public interface NestedInteger {
+ *     // Constructor initializes an empty nested list.
+ *     public NestedInteger();
+ *
+ *     // Constructor initializes a single integer.
+ *     public NestedInteger(int value);
+ *
+ *     // @return true if this NestedInteger holds a single integer, rather than a nested list.
+ *     public boolean isInteger();
+ *
+ *     // @return the single integer that this NestedInteger holds, if it holds a single integer
+ *     // Return null if this NestedInteger holds a nested list
+ *     public Integer getInteger();
+ *
+ *     // Set this NestedInteger to hold a single integer.
+ *     public void setInteger(int value);
+ *
+ *     // Set this NestedInteger to hold a nested list and adds a nested integer to it.
+ *     public void add(NestedInteger ni);
+ *
+ *     // @return the nested list that this NestedInteger holds, if it holds a nested list
+ *     // Return null if this NestedInteger holds a single integer
+ *     public List<NestedInteger> getList();
+ * }
+ */
+class Solution {
+    int sum ;
+    public int depthSumInverse(List<NestedInteger> nestedList) {
+        sum = 0;
+        int level = depth(nestedList);
+        Queue<NestedInteger> queue = new LinkedList<>();
+        queue.addAll(nestedList);
+        //System.out.println(level);
+        //use bfs to get the sum;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                NestedInteger n = queue.poll();
+                if(n.isInteger()) {
+                    //System.out.println(n.getInteger());
+                    //System.out.println(level);
+                    sum += level * n.getInteger();
+                    //System.out.println(sum);
+                }else {
+                    queue.addAll(n.getList());
+                }
+                
+            }
+            level--;//bug 1;level is out of for loop
+        }
+        return sum;
+    }
+    //use dfs to get depth 
+    public int depth(List<NestedInteger> nestedList) {
+        int level = 0;int max = 0;
+        for (NestedInteger n : nestedList) {
+            if (n.isInteger()) {
+                continue;
+            }else {
+                level = depth(n.getList()) + 1;
+                max = Math.max(level,max);//need to check the max level, every element level is different
+            }
+        }
+        if (level == 0) {
+            level = 1;
+            max = 1;//bug2: need to give 1 to max else it will be 0,
+        }
+        return max;
+        
+    }
 }
 
-
+//method 2:
+class Solution {
+    public int depthSumInverse(List<NestedInteger> nestedList) {
+        int unweighted = 0, weighted = 0;
+        while (!nestedList.isEmpty()) {
+            List<NestedInteger> nextLevel = new ArrayList<>();
+            for (NestedInteger ni : nestedList) {
+                if (ni.isInteger()){
+                	//add last level and this level Integer
+                    unweighted += ni.getInteger();
+                    System.out.println(unweighted);
+                }
+                else
+                    nextLevel.addAll(ni.getList());
+            }
+            //add last level result and this level result
+            weighted += unweighted;//mutiple add weighted level by level 2+[1,1]+[1,1], 
+            System.out.println("w="+weighted);
+            nestedList = nextLevel;
+        }
+        return weighted;
+    }
+}
