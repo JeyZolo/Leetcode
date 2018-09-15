@@ -499,6 +499,7 @@ return its zigzag level order traversal as:
  *     TreeNode(int x) { val = x; }
  * }
  */
+// use level to decide how to add element to list
 class Solution {
     public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
@@ -530,3 +531,188 @@ class Solution {
         return res;
     }
 }
+/*
+655. Print Binary Tree
+DescriptionHintsSubmissionsDiscussSolution
+Print a binary tree in an m*n 2D string array following these rules:
+
+The row number m should be equal to the height of the given binary tree.
+The column number n should always be an odd number.
+The root node's value (in string format) should be put in the exactly middle of the first row it can be put. The column and the row where the root node belongs will separate the rest space into two parts (left-bottom part and right-bottom part). You should print the left subtree in the left-bottom part and print the right subtree in the right-bottom part. The left-bottom part and the right-bottom part should have the same size. Even if one subtree is none while the other is not, you don't need to print anything for the none subtree but still need to leave the space as large as that for the other subtree. However, if two subtrees are none, then you don't need to leave space for both of them.
+Each unused space should contain an empty string "".
+Print the subtrees following the same rules.
+Example 1:
+Input:
+     1
+    /
+   2
+Output:
+[["", "1", ""],
+ ["2", "", ""]]
+Example 2:
+Input:
+     1
+    / \
+   2   3
+    \
+     4
+Output:
+[["", "", "", "1", "", "", ""],
+ ["", "2", "", "", "", "3", ""],
+ ["", "", "4", "", "", "", ""]]
+Example 3:
+Input:
+      1
+     / \
+    2   5
+   / 
+  3 
+ / 
+4 
+Output:
+
+[["",  "",  "", "",  "", "", "", "1", "",  "",  "",  "",  "", "", ""]
+ ["",  "",  "", "2", "", "", "", "",  "",  "",  "",  "5", "", "", ""]
+ ["",  "3", "", "",  "", "", "", "",  "",  "",  "",  "",  "", "", ""]
+ ["4", "",  "", "",  "", "", "", "",  "",  "",  "",  "",  "", "", ""]]*/
+ /**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    //  满二叉树，full BFS, count of node is pow(2,height) -1; 列是这个值
+    public List<List<String>> printTree(TreeNode root) {
+        List<List<String>> res = new LinkedList<>();
+        int height = root == null ? 1 : getHeight(root);
+        int rows = height, columns = (int) (Math.pow(2, height) - 1);
+        List<String> row = new ArrayList<>();
+        for(int i = 0; i < columns; i++)  row.add("");
+        for(int i = 0; i < rows; i++)  res.add(new ArrayList<>(row));
+        populateRes(root, res, 0, rows, 0, columns - 1);
+        return res;
+    }
+
+    public void populateRes(TreeNode root, List<List<String>> res, int row, int totalRows, int i, int j) {
+        if (row == totalRows || root == null) return;
+        res.get(row).set((i+j)/2, Integer.toString(root.val));
+        populateRes(root.left, res, row+1, totalRows, i, (i+j)/2 - 1);
+        populateRes(root.right, res, row+1, totalRows, (i+j)/2+1, j);
+    }
+
+    public int getHeight(TreeNode root) {
+         if (root == null) return 0;
+         return 1 + Math.max(getHeight(root.left), getHeight(root.right));
+    }
+}
+/*
+253. Meeting Rooms II
+DescriptionHintsSubmissionsDiscussSolution
+Given an array of meeting time intervals consisting of start and end times [[s1,e1],[s2,e2],...] (si < ei), find the minimum number of conference rooms required.
+
+Example 1:
+
+Input: [[0, 30],[5, 10],[15, 20]]
+Output: 2
+Example 2:
+
+Input: [[7,10],[2,4]]
+Output: 1*/
+/**
+ * Definition for an interval.
+ * public class Interval {
+ *     int start;
+ *     int end;
+ *     Interval() { start = 0; end = 0; }
+ *     Interval(int s, int e) { start = s; end = e; }
+ * }
+ */
+class Timeslot {
+    int time;
+    boolean status;
+    
+    public Timeslot(int t, boolean s) {
+        this.status = s;
+        this.time = t;
+    }
+        
+}
+class Solution {
+    public int minMeetingRooms(Interval[] intervals) {
+        //List<Timelot> list = new ArrayList<>();
+        if (intervals == null || intervals.length == 0)
+            return 0;
+        PriorityQueue<Timeslot> pq = new PriorityQueue<>(2*intervals.length, new Comparator<Timeslot>(){//Comparator
+            @Override
+            public int compare(Timeslot o1, Timeslot o2) {//public
+                if (o1.time != o2.time)
+                    return o1.time - o2.time;
+                else return o1.status == false ? -1: 1;//
+            }
+        });
+        for (Interval i : intervals) {
+            Timeslot s = new Timeslot(i.start, true);
+            Timeslot t = new Timeslot(i.end, false);
+            pq.offer(s);
+            pq.offer(t);
+        }
+        int res = 0;int count = 0;
+        while(!pq.isEmpty()) {
+            Timeslot p = pq.poll();
+            if(p.status == true) {
+                count++;
+            }else {
+                count--;
+            }
+            res = Math.max(count, res);
+        }
+        return res;
+    }
+                                                         
+}
+//2
+ class Point implements Comparable<Point>{
+        int t;
+        int stus;
+        public Point(int a, int b){
+            this.t = a;
+            this.stus = b;
+        }
+        @Override
+        public int compareTo(Point that){
+            if(that.t==this.t)
+                return that.stus-this.stus;//相等时，要先land，再起飞，按照降序排列，1，0，1是降落，0是起飞
+            return this.t-that.t;//按照升序排列
+        }
+    }
+public class Solution {
+    /**
+     * @param airplanes: An interval array
+     * @return: Count of airplanes are in the sky.
+     */
+    public int countOfAirplanes(List<Interval> airplanes) {
+        // write your code here
+        if(airplanes==null) return 0;
+        PriorityQueue<Point> queue = new PriorityQueue<>();
+        for(Interval inter: airplanes){
+            queue.offer(new Point(inter.start,0));
+            queue.offer(new Point(inter.end,1));
+        }
+        int count=0;int max = 0;
+        while(!queue.isEmpty()){
+            Point tp = queue.poll();
+            //System.out.println(tp.t);
+            if(tp.stus==0) count++;
+            else count--;
+            max = Math.max(max,count);
+        }
+        return max;
+    }
+}
+
+
+
