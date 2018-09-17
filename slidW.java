@@ -714,5 +714,210 @@ public class Solution {
     }
 }
 
+/*
+numbers of island II
+*/
+int[][] dirs = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
 
+public List<Integer> numIslands2(int m, int n, int[][] positions) {
+    List<Integer> result = new ArrayList<>();
+    if(m <= 0 || n <= 0) return result;
+
+    int count = 0;                      // number of islands
+    int[] roots = new int[m * n];       // one island = one tree
+    Arrays.fill(roots, -1);            
+
+    for(int[] p : positions) {
+        int root = n * p[0] + p[1];     // assume new point is isolated island
+        roots[root] = root;             // add new island
+        count++;
+
+        for(int[] dir : dirs) {
+            int x = p[0] + dir[0]; 
+            int y = p[1] + dir[1];
+            int nb = n * x + y;
+            if(x < 0 || x >= m || y < 0 || y >= n || roots[nb] == -1) continue;
+            
+            int rootNb = findIsland(roots, nb);
+            if(root != rootNb) {        // if neighbor is in another island
+                roots[root] = rootNb;   // union two islands 
+                root = rootNb;          // current tree root = joined tree root
+                count--;               
+            }
+        }
+
+        result.add(count);
+    }
+    return result;
+}
+
+public int findIsland(int[] roots, int id) {
+    while(id != roots[id]) id = roots[id];
+    return id;
+}
+//Path Compression (Bonus)
+//If you have time, add one line to shorten the tree. The new runtime becomes: 19ms (95.94%).
+
+public int findIsland(int[] roots, int id) {
+    while(id != roots[id]) {
+        roots[id] = roots[roots[id]];   // only one line added
+        id = roots[id];
+    }
+    return id;
+}
+/*／*
+690. Employee Importance
+DescriptionHintsSubmissionsDiscussSolution
+You are given a data structure of employee information, which includes the employee's unique id, his importance value and his direct subordinates' id.
+
+For example, employee 1 is the leader of employee 2, and employee 2 is the leader of employee 3. They have importance value 15, 10 and 5, respectively. Then employee 1 has a data structure like [1, 15, [2]], and employee 2 has [2, 10, [3]], and employee 3 has [3, 5, []]. Note that although employee 3 is also a subordinate of employee 1, the relationship is not direct.
+
+Now given the employee information of a company, and an employee id, you need to return the total importance value of this employee and all his subordinates.
+
+Example 1:
+Input: [[1, 5, [2, 3]], [2, 3, []], [3, 3, []]], 1
+Output: 11
+Explanation:
+Employee 1 has importance value 5, and he has two direct subordinates: employee 2 and employee 3. They both have importance value 3. So the total importance value of employee 1 is 5 + 3 + 3 = 11.
+Note:
+One employee has at most one direct leader and may have several subordinates.*/
+/*
+// Employee info
+class Employee {
+    // It's the unique id of each node;
+    // unique id of this employee
+    public int id;
+    // the importance value of this employee
+    public int importance;
+    // the id of direct subordinates
+    public List<Integer> subordinates;
+};
+*/
+//BFS to store all neighbor into queue, poll all out and add the importance into it;
+class Solution {
+    public int getImportance(List<Employee> employees, int id) {
+        int value = 0;
+        HashMap<Integer,Employee> map = new HashMap<>();
+        
+        for (Employee  e : employees) {
+            map.put(e.id, e);
+        }
+        Queue<Employee> queue = new LinkedList<>();
+        queue.offer(map.get(id));
+        
+        while (!queue.isEmpty()) {
+           int size = queue.size();
+            
+            while (size-- > 0) {
+                Employee e = queue.poll();
+                value += e.importance;
+                for (Integer i : e.subordinates) {
+                    queue.offer(map.get(i));
+                }
+            }
+        }
+       return value;
+    }
+}
+//9/16
+/*
+68. Text Justification
+DescriptionHintsSubmissionsDiscussSolution
+Given an array of words and a width maxWidth, format the text such that each line has exactly maxWidth characters and is fully (left and right) justified.
+
+You should pack your words in a greedy approach; that is, pack as many words as you can in each line. Pad extra spaces ' ' when necessary so that each line has exactly maxWidth characters.
+
+Extra spaces between words should be distributed as evenly as possible. If the number of spaces on a line do not divide evenly between words, the empty slots on the left will be assigned more spaces than the slots on the right.
+
+For the last line of text, it should be left justified and no extra space is inserted between words.
+
+Note:
+
+A word is defined as a character sequence consisting of non-space characters only.
+Each word's length is guaranteed to be greater than 0 and not exceed maxWidth.
+The input array words contains at least one word.
+Example 1:
+
+Input:
+words = ["This", "is", "an", "example", "of", "text", "justification."]
+maxWidth = 16
+Output:
+[
+   "This    is    an",
+   "example  of text",
+   "justification.  "
+]
+Example 2:
+
+Input:
+words = ["What","must","be","acknowledgment","shall","be"]
+maxWidth = 16
+Output:
+[
+  "What   must   be",
+  "acknowledgment  ",
+  "shall be        "
+]
+Explanation: Note that the last line is "shall be    " instead of "shall     be",
+             because the last line must be left-justified instead of fully-justified.
+             Note that the second line is also left-justified becase it contains only one word.
+Example 3:
+
+Input:
+words = ["Science","is","what","we","understand","well","enough","to","explain",
+         "to","a","computer.","Art","is","everything","else","we","do"]
+maxWidth = 20
+Output:
+[
+  "Science  is  what we",
+  "understand      well",
+  "enough to explain to",
+  "a  computer.  Art is",
+  "everything  else  we",
+  "do                  "
+]
+*/
+class Solution {
+    public List<String> fullJustify(String[] words, int maxWidth) {
+        List<String> res = new ArrayList<>();
+        
+        if (words == null || words.length == 0 || maxWidth == 0)
+            return res;
+        int i = 0, j = 0;int n = words.length;
+        for (i = 0; i < words.length; i = j) {
+            // get how many word in one line
+            int len = -1;
+            //calculate the word in one line can reach where
+            for (j = i; j < n && len + words[j].length() + 1 <= maxWidth;++j ){
+                len +=  words[j].length()  + 1;
+            }
+            int space = 1;
+            int extra = 0;
+            //calculate the space between words and the end space
+            if(j != i + 1 && j != n) {
+                space = (maxWidth - len) / (j - i - 1) + 1;
+                extra = (maxWidth - len) %(j - i - 1);
+                
+            }
+            StringBuilder row = new StringBuilder(words[i]);
+            
+            for (int k = i + 1; k < j; ++k) {
+                //append space after every word
+                addSpace(row, space);
+                //apend the extra space to every word from left to right
+                if(-- extra >= 0) row.append(' ');
+                row.append(words[k]);
+            }
+            //add the left space to the end
+            addSpace(row, maxWidth - row.length());
+            res.add(row.toString());
+        }
+        return res;
+    }
+    public void addSpace(StringBuilder row, int count) {
+        while (count -- > 0) {
+            row.append(' ');
+        }
+    }
+}
 
