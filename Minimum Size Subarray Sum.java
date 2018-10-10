@@ -88,3 +88,87 @@ class Solution {
         return left == null ? right : right == null ? left : root;
     }
 }
+/*
+149. Max Points on a Line
+DescriptionHintsSubmissionsDiscussSolution
+Given n points on a 2D plane, find the maximum number of points that lie on the same straight line.
+
+Example 1:
+
+Input: [[1,1],[2,2],[3,3]]
+Output: 3
+Explanation:
+^
+|
+|        o
+|     o
+|  o  
++------------->
+0  1  2  3  4
+Example 2:
+
+Input: [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]]
+Output: 4
+Explanation:
+^
+|
+|  o
+|     o        o
+|        o
+|  o        o
++------------------->
+0  1  2  3  4  5  6*/
+    public class Solution{
+        //找到每两个点的差值，然后去掉公约数，吧他们放进map里
+        public int maxPoints(Point[] points) {
+        	if (points==null) return 0;
+        	if (points.length<=2) return points.length;
+        	
+        	Map<Integer,Map<Integer,Integer>> map = new HashMap<Integer,Map<Integer,Integer>>();
+        	int result=0;
+        	for (int i=0;i<points.length;i++){ 
+        		map.clear();
+        		int overlap=0,max=0;
+        		for (int j=i+1;j<points.length;j++){
+        			int x=points[j].x-points[i].x;
+                	int y = points[j].y - points[i].y;// 手误 写成int y = points[j].y - points[i].x 注意细节
+        			if (x==0&&y==0){
+        				overlap++;
+        				continue;
+        			}
+        			int gcd=generateGCD(x,y);
+                    //去除公约数
+        			if (gcd!=0){
+        				x/=gcd;
+        				y/=gcd;
+        			}
+        			
+        			if (map.containsKey(x)){
+        				if (map.get(x).containsKey(y)){
+        					map.get(x).put(y, map.get(x).get(y)+1);
+        				}else{
+        					map.get(x).put(y, 1);
+        				}   					
+        			}else{
+        				Map<Integer,Integer> m = new HashMap<Integer,Integer>();
+        				m.put(y, 1);
+        				map.put(x, m);
+        			}
+        			max=Math.max(max, map.get(x).get(y));
+        		}
+        		result=Math.max(result, max+overlap+1);//);//add here
+        	}
+        	return result;
+        	
+        	
+        }
+        /*
+        In mathematics, the greatest common divisor (gcd) of two or more integers, which are not all zero, is the largest positive integer that divides each of the integers. For example, the gcd of 8 and 12 is 4.公约数*/
+        
+        private int generateGCD(int a,int b){
+    
+        	if (b==0) return a;
+        	else return generateGCD(b,a%b);
+        	
+        }
+    }
