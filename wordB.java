@@ -140,6 +140,9 @@ class Solution {
     }
 }
 /*
+572.
+Subtree of Another Tree
+
 Given two non-empty binary trees s and t, check whether tree t has exactly the same structure and node values with a subtree of s. A subtree of s is a tree consists of a node in s and all of this node's descendants. The tree s could also be considered as a subtree of itself.
 
 Example 1:
@@ -204,3 +207,65 @@ class Solution {
 }
 
 
+
+/*3.
+Longest Substring Without Repeating Characters
+Given a string, find the length of the longest substring without repeating characters.
+
+Example 1:
+
+Input: "abcabcbb"
+Output: 3 
+Explanation: The answer is "abc", with the length of 3. 
+Example 2:
+
+Input: "bbbbb"
+Output: 1
+Explanation: The answer is "b", with the length of 1.
+Example 3:
+
+Input: "pwwkew"
+Output: 3
+Explanation: The answer is "wke", with the length of 3. 
+             Note that the answer must be a substring, "pwke" is a subsequence and not a substring.
+Seen this question in a real interview before?
+
+Yes*/
+1
+class Solution {
+2
+    public int lengthOfLongestSubstring(String s) {
+3
+        if (s == null || s.length() == 0)
+4
+            return 0;
+5
+        int[] alb = new int[256];
+6
+        int len = s.length();
+7
+        int j = 0, max = 0;
+8
+        for (int i = 0;i < len; i++) {
+9
+            while (j < len && alb[s.charAt(j)] == 0) {
+10
+                alb[s.charAt(j)]++;
+11
+                j++;
+12
+            }
+13
+            max = Math.max(j-i, max);
+14
+            alb[s.charAt(i)]--;
+15
+            //;
+16
+        }
+17
+        return max;
+18
+    }
+19
+}
