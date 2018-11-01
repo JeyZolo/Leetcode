@@ -424,3 +424,452 @@ class Solution {
         return output;
     }
 }
+/*
+380.
+Insert Delete GetRandom O(1)
+Design a data structure that supports all following operations in average O(1) time.
+
+insert(val): Inserts an item val to the set if not already present.
+remove(val): Removes an item val from the set if present.
+getRandom: Returns a random element from current set of elements. Each element must have the same probability of being returned.
+Example:
+
+// Init an empty set.
+RandomizedSet randomSet = new RandomizedSet();
+
+// Inserts 1 to the set. Returns true as 1 was inserted successfully.
+randomSet.insert(1);
+
+// Returns false as 2 does not exist in the set.
+randomSet.remove(2);
+
+// Inserts 2 to the set, returns true. Set now contains [1,2].
+randomSet.insert(2);
+
+// getRandom should return either 1 or 2 randomly.
+randomSet.getRandom();
+思路： 加一个list,array能平均概率，map里存的是值和对应的index，
+每个数加入到最后面，然后删除的时候，把最后面的数和该值调换，删除最后的值就可以了。
+// Removes 1 from the set, returns true. Set now conta*/
+class RandomizedSet {
+
+    /** Initialize your data structure here. */
+    HashMap<Integer,Integer> map;
+    int index;
+    List<Integer> list;
+    Random rand= new Random();
+    public RandomizedSet() {
+        map = new HashMap<>();
+        index = 0;
+        list = new ArrayList<>();
+        
+    }
+    
+    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+    public boolean insert(int val) {
+        if(!map.containsKey(val)){
+            map.put(val, list.size());
+            list.add(val);
+            return true;
+        }
+        return false;
+    }
+    
+    /** Removes a value from the set. Returns true if the set contained the specified element. */
+    public boolean remove(int val) {
+        if(!map.containsKey(val))
+            return false;
+        int last = list.get(list.size() - 1);
+        int index = map.get(val);
+        if(index < list.size()){
+            list.set(index, last);
+            map.put(last,index);
+        }
+        list.remove(list.size() - 1);
+        map.remove(val);
+        return true;
+    }
+    
+    /** Get a random element from the set. */
+    public int getRandom() {
+        return list.get(rand.nextInt(list.size()));
+    }
+}
+
+/**
+ * Your RandomizedSet object will be instantiated and called as such:
+ * RandomizedSet obj = new RandomizedSet();
+ * boolean param_1 = obj.insert(val);
+ * boolean param_2 = obj.remove(val);
+ * int param_3 = obj.getRandom();
+ */
+/*
+Longest Substring Without Repeating Characters
+Given a string, find the length of the longest substring without repeating characters.
+
+Example 1:
+
+Input: "abcabcbb"
+Output: 3 
+Explanation: The answer is "abc", with the length of 3. 
+Example 2:
+
+Input: "bbbbb"
+Output: 1
+Explanation: The answer is "b", with the length of 1.
+Example 3:
+
+Input: "pwwkew"
+Output: 3
+Explanation: The answer is "wke", with the length of 3. 
+             Note that the answer must be a substring, "pwke" is a subsequence and not a substring.
+*/
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        int[] alb = new int[256];
+        if(s == null || s.length() == 0)
+            return 0;
+        int j = 0;int maxLen = 0;
+        for(int i = 0; j < s.length() && i < s.length(); i++) {
+            char c = s.charAt(j);
+            
+            while(j < s.length() && alb[c] == 0) {
+                alb[c]++;
+                j++;
+                if(j < s.length())
+                    c = s.charAt(j);
+            }
+            maxLen = Math.max(maxLen, j - i);
+            alb[s.charAt(i)]--;
+        }
+        return maxLen;
+    }
+}
+// if it's String[]
+class Solution {
+    public List<String> lengthOfLongestSubstring(String[] s) {
+        HashMap<String,Integer> map = new HashMap<>();
+        if(s == null || s.length == 0)
+            return 0;
+        int j = 0;int maxLen = 0;int first = 0;
+        for(int i = 0; j < s.length && i < s.length; i++) {
+            String sub = s[j];
+            
+            while(j < s.length() && !map.containsKey(sub)) {
+                map.put(sub,1);
+                j++;
+                if(j < s.length())
+                    c = s.charAt(j);
+            }
+            if(maxLen < j - i) {
+            	first = i;
+            	maxLen = j - i;
+            }
+            if(map.get(s[i]) == 1)
+            	map.remove(s[i]);
+            map.put(s[i], map.get(s[i])-1);
+        }
+        for(int i = first; i < maxLen; i++) {
+        	res.add(s[i]);
+        }
+        return res;
+    }
+}
+/*
+347.
+Top K Frequent Elements
+Given a non-empty array of integers, return the k most frequent elements.
+
+Example 1:
+
+Input: nums = [1,1,1,2,2,3], k = 2
+Output: [1,2]
+Example 2:
+
+Input: nums = [1], k = 1
+Output: [1]
+Note:
+
+You may assume k is always valid, 1 ≤ k ≤ number of unique elements.
+Your algorithm's time complexity must be better than O(n log n), where n is the array's size.*/
+class Solution {
+    //use PQ 用堆排序
+    class Pair implements Comparable<Pair> {
+        int val, freq;
+        public Pair(int val, int freq)  {
+            this.val = val;
+            this.freq = freq;
+        }
+        public int compareTo(Pair that) {
+            return this.freq - that.freq;
+        }
+    }
+    public List<Integer> topKFrequent(int[] nums, int k) {
+        List<Integer> res = new ArrayList<>();
+        PriorityQueue<Pair> pq = new PriorityQueue<>();
+        HashMap<Integer,Integer> map = new HashMap<>();
+        
+        for (int i = 0; i < nums.length; i++) {
+            if(!map.containsKey(nums[i])) {
+                map.put(nums[i], 0);
+            }
+            map.put(nums[i], map.get(nums[i]) + 1);
+        }
+        for(Map.Entry<Integer,Integer> entry : map.entrySet()) {
+            
+            pq.offer(new Pair(entry.getKey(), entry.getValue()));
+            if(pq.size() > k)
+                pq.poll();
+        }
+        while(!pq.isEmpty()) {
+            res.add(0,pq.poll().val);
+        }
+        return res;
+                     
+    }
+}
+//用桶排序
+class Solution {
+    public List<Integer> topKFrequent(int[] nums, int k) {
+        List<Integer> res = new ArrayList<>();
+        if(nums == null || nums.length == 0) return res;
+        //use bucket to store num with the sam freq
+        List<Integer>[] bucket = new List[nums.length + 1];
+        HashMap<Integer, Integer> map = new HashMap<>();
+        
+        for (int i = 0; i < nums.length; i++) {
+            if(!map.containsKey(nums[i])) {
+                map.put(nums[i], 0);// line13 add freq
+            }
+            map.put(nums[i], map.get(nums[i])+1);
+        }
+        for (Map.Entry<Integer,Integer> pair : map.entrySet()) {
+            int freq = pair.getValue();
+            //System.out.println(freq);
+            if(bucket[freq] == null) {
+                bucket[freq] = new ArrayList<>();
+            }
+            bucket[freq].add(pair.getKey());
+        }
+        for (int i = nums.length; i > 0 && k > 0; i--) {
+            if (bucket[i] == null) continue;
+            for (Integer num : bucket[i]){
+                res.add(num);
+                k--;
+                if (k <= 0) return res;
+            }
+        }
+        return res;
+        
+    }
+}
+/*
+253.
+Meeting Rooms II
+Given an array of meeting time intervals consisting of start and end times [[s1,e1],[s2,e2],...] (si < ei), find the minimum number of conference rooms required.
+
+Example 1:
+
+Input: [[0, 30],[5, 10],[15, 20]]
+Output: 2
+Example 2:
+
+Input: [[7,10],[2,4]]
+Output: 1
+Seen*/
+/**
+ * Definition for an interval.
+ * public class Interval {
+ *     int start;
+ *     int end;
+ *     Interval() { start = 0; end = 0; }
+ *     Interval(int s, int e) { start = s; end = e; }
+ * }
+ */
+//扫描线:排序所有的time，分为开房间，关房间，开房间，如果没关上，下一个开房间就要增加一个房间，关上了，就减掉一个房间，如果同一时间，先关上房间，再打开房间；找到最大数即可；
+class Solution {
+    class TimeRange implements Comparable<TimeRange> {
+        int time;
+        boolean status;
+        public TimeRange(int time, boolean status) {
+            this.time = time;
+            this.status = status;
+        }
+        public int compareTo(TimeRange that) {
+            //compare the time, if time is the same ,which one is first, if status is false, false shouble be first, close first then can open;
+            if(that.time == this.time)
+                return that.status == false? 1 : -1;
+            return this.time - that.time;
+        }
+    }
+    public int minMeetingRooms(Interval[] intervals) {
+        int len = intervals.length;
+        if(intervals == null || intervals.length == 0)
+            return 0;
+        PriorityQueue<TimeRange> pq = new PriorityQueue<>();
+        
+        for(Interval inter : intervals) {
+            int start = inter.start;
+            int end = inter.end;
+            pq.offer(new TimeRange(start, true));
+            pq.offer(new TimeRange(end, false));
+            
+        }
+        int count = 0, max = 0;
+        while(!pq.isEmpty()) {
+            TimeRange t = pq.poll();
+            if(t.status == true)
+                count++;
+            else count--;
+            max = Math.max(max, count);
+        }
+        return max;
+        
+    }
+}
+/*
+139.
+Word Break
+Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, determine if s can be segmented into a space-separated sequence of one or more dictionary words.
+
+Note:
+
+The same word in the dictionary may be reused multiple times in the segmentation.
+You may assume the dictionary does not contain duplicate words.
+Example 1:
+
+Input: s = "leetcode", wordDict = ["leet", "code"]
+Output: true
+Explanation: Return true because "leetcode" can be segmented as "leet code".
+Example 2:
+
+Input: s = "applepenapple", wordDict = ["apple", "pen"]
+Output: true
+Explanation: Return true because "applepenapple" can be segmented as "apple pen apple".
+             Note that you are allowed to reuse a dictionary word.
+Examp*/
+class Solution {
+    public boolean wordBreak(String s, List<String> wordDict) {
+        Set<String> set = new HashSet<>();
+        for(String w : wordDict){
+            set.add(w);
+        }
+        HashMap<String,Boolean> map = new HashMap<>();
+        return dfs(s, set, map);
+    }
+    public boolean dfs(String s, Set<String> set,
+                       HashMap<String,Boolean> map) {
+        boolean r = false;
+        if(s.length() == 0)
+            return true;
+        
+        if(map.containsKey(s))
+            return map.get(s);
+        for(int i = 0; i <= s.length(); i++){
+            String substr = s.substring(0,i);
+            if(set.contains(substr) ) {
+                
+                boolean res = dfs(s.substring(i), set, map);
+                if(res == true)
+                    return true;
+                map.put(substr, res);
+            }
+        }
+        map.put(s, r);
+        return false;
+    }
+}
+/*
+49.
+Group Anagrams
+Given an array of strings, group anagrams together.
+
+Example:
+
+Input: ["eat", "tea", "tan", "ate", "nat", "bat"],
+Output:
+[
+  ["ate","eat","tea"],
+  ["nat","tan"],
+  ["bat"]
+]
+Note:
+
+All inputs will be in lowercase.
+The order of your output does not matter.
+See*/
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        List<List<String>> res = new ArrayList<>();
+        HashMap<String,List<String>> map = new HashMap<>();
+        
+        for(String s: strs) {
+            char[] arr = s.toCharArray();
+            Arrays.sort(arr);
+            String key = String.valueOf(arr);
+            if(!map.containsKey(key)) {
+                map.put(key, new ArrayList<>());
+            }
+            map.get(key).add(s);
+        }
+        return new ArrayList<>(map.values());
+    }
+}
+/*
+200.
+Number of Islands
+Given a 2d grid map of '1's (land) and '0's (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+
+Example 1:
+
+Input:
+11110
+11010
+11000
+00000
+
+Output: 1
+Example 2:
+
+Input:
+11000
+11000
+00100
+00011
+
+Output: 3
+Seen*/
+class Solution {
+    public int numIslands(char[][] grid) {
+        if(grid == null || grid.length == 0)
+            return 0;
+        int count = 0;
+        
+        
+        for(int i = 0; i < grid.length; i++) {
+            for(int j = 0; j < grid[0].length; j++) {
+                if(grid[i][j] == '1'){
+                    
+                    dfs(grid, i, j);
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+    public void dfs(char[][] grid, int i, int j) {
+        if(i < 0 || j < 0 || i >= grid.length 
+           || j >= grid[0].length || grid[i][j] == '0' )
+            return;
+        int[] dx = {0,0,-1,1};
+        int[] dy = {1,-1,0,0};
+        grid[i][j] = '0';
+        //visted[i][j] = true;
+        for(int k = 0; k < 4; k++) {
+            int x = i + dx[k];
+            int y = j + dy[k];
+            dfs(grid, x, y);
+        }
+        return;
+    }
+}
