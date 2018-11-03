@@ -1,4 +1,47 @@
 /*
+593.
+Valid Square
+Given the coordinates of four points in 2D space, return whether the four points could construct a square.
+
+The coordinate (x,y) of a point is represented by an integer array with two integers.
+
+Example:
+Input: p1 = [0,0], p2 = [1,1], p3 = [1,0], p4 = [0,1]
+Output: True
+Note:
+
+All the input integers are in the range [-10000, 10000].
+A valid square has four equal sides with positive length and four equal angles (90-degree angles).
+Input points have no order.
+*/
+class Solution {
+    public boolean validSquare(int[] p1, int[] p2, int[] p3, int[] p4) {
+        long[] dist = {distance(p1,p2),distance(p1,p3),
+                      distance(p1,p4),distance(p2,p3),
+                      distance(p2,p4),distance(p3,p4)};
+        long lside = 0;long side = 0;
+        for(long len : dist) {
+            lside = Math.max(len, lside);
+            if(len != lside) {
+                side = len;
+            }
+            
+        }
+        int lcount = 0, count = 0;
+        for(long len : dist) {
+            if(len == lside)
+                lcount++;
+            if(len == side)
+                 count++;
+        }
+        return lcount == 2 && count == 4;
+        
+    }
+    public long distance(int[] p1, int[] p2) {
+        return (long)Math.pow(p1[0]-p2[0], 2) + (long)Math.pow(p1[1]-p2[1], 2);
+    }
+}
+/*
 564.
 Find the Closest PalindromeGiven an integer n, find the closest integer (not including itself), which is a palindrome.
 
