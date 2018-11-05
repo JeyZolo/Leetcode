@@ -281,3 +281,99 @@ class Solution {
     }
 }
 
+/*
+20.
+Valid Parentheses
+Description
+Solution
+Submissions
+Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+
+An input string is valid if:
+
+Open brackets must be closed by the same type of brackets.
+Open brackets must be closed in the correct order.
+Note that an empty string is also considered valid.
+
+Example 1:
+
+Input: "()"
+Output: true
+Example 2:
+
+Input: "()[]{}"
+Output: true
+Example 3:
+
+Input: "(]"
+Output: false
+Example 4:
+
+Input: "([)]"
+Ou*/
+class Solution {
+    public boolean isValid(String s) {
+        if(s == null)
+            return true;
+        Stack<Character> stack = new Stack<>();
+        
+        char[] arr = s.toCharArray();
+        stack.push('x');
+        for(int i = 0; i < arr.length; i++) {
+            char c = arr[i];
+            if(c == '{') {
+                stack.push('}');
+            }
+            if(c == '(') {
+                stack.push(')');
+            }
+            if(c == '[') {
+                stack.push(']');
+            }
+            
+            if(c == ']' || c == ')' || c == '}') {
+                if(stack.pop() != c)
+                    return false;
+            }
+        }
+        return stack.peek() == 'x';
+    }
+}
+/*
+1. 给一个array of tuple，每个tuple <a, b> 代表一个candidate飞去sf和nyc的cost，分别是a和b，所有candidate要平均飞去sf和nyc，
+如果是奇数就，单出来的就飞去最小cost的那个city，问最小total cost。楼主直接按照diff排序解的.  
+2. 给一个array 和 数字 m，求这个array的还有m个odd number的beautiful subarray的个数。楼主用一维DP解的*/
+//按照 nyc - sf 排序，最短路径
+class Solution {
+	int min = Integer.MAX_VALUE;
+	int limit;
+	public int findMinCost(int[][] cost) {
+			int len = cost.length;
+			boolean[] visited = new boolean[len];
+			int half = len/2;
+			limit = half;
+
+			helper(cost, 0, visited, 0, 0);
+			return min;
+
+	}
+	public void helper(int[][] cost, int half,boolean[] visited, int cost, int count) {
+			
+			if(count == cost.length) {
+				min = Math.min(min, cost);
+				return;
+			}
+			for(int i = 0; i < cost.length; i++) {
+				if(visited[i]) continue;
+				visited[i] = true;
+				if(half < limit) {
+					helper(cost[i][0], half + 1, visited,cost + cost[i][1], count + 1);
+				}
+
+				helper(cost[i][1], half, visited,cost + cost[i][1], count + 1);
+				visited[i] = false;
+
+			}
+	}
+}
+
