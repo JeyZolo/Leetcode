@@ -14,6 +14,8 @@ All the input integers are in the range [-10000, 10000].
 A valid square has four equal sides with positive length and four equal angles (90-degree angles).
 Input points have no order.
 */
+//        //算出4个点，所有之间的距离，6个距离，2个最大距离，4个相等距离，判断一下即可；    
+
 class Solution {
     public boolean validSquare(int[] p1, int[] p2, int[] p3, int[] p4) {
         long[] dist = {distance(p1,p2),distance(p1,p3),
@@ -54,6 +56,102 @@ Note:
 The input n is a positive integer represented by string, whose length will not exceed 18.
 If there is a tie, return the smaller one as answer.*/
 //题意，找距离该数值绝对距离最小的回文
+/*
+ 最小距离，就是该值+，-1得到的最近回文串，距离最近，只能从中间开始+，-1,这样差距最小，如果从两边开始+-1，差距很大，比如123，=》323，123=》121，123，111
+ //找比该值大的最近回文：方法是，把前一半左右对称，作为回文串，然后看该回文串是不是比该值大，大的话就直接返回，如果小的话，就将中间的值+1，做成回文串，返回；
+     //找比该值小的最近回文：方法是，把前一半左右对称，作为回文串，然后看该回文串是不是比该值小，小的话就直接返回，如果大的话，就将中间的值-1，做成回文串，返回；
+*/
+
+public class Solution {
+    public String nearestPalindromic(String n) {
+        //ex:1343
+        Long number = Long.parseLong(n);
+        //1344
+        Long big = findHigherPalindrome(number + 1);
+        //1342
+        Long small = findLowerPalindrome(number - 1);
+        return Math.abs(number - small) > Math.abs(big - number) ? String.valueOf(big) : String.valueOf(small);
+    }
+    //找比该值大的最近回文：方法是，把前一半左右对称，作为回文串，然后看该回文串是不是比该值大，大的话就直接返回，如果小的话，就将中间的值+1，做成回文串，返回；
+    public Long findHigherPalindrome(Long limit) {
+        String n = Long.toString(limit);
+        char[] s = n.toCharArray(); // limit
+        int m = s.length;
+        char[] t = Arrays.copyOf(s, m); // target
+        //t:1331
+        for (int i = 0; i < m / 2; i++) {
+            t[m - 1 - i] = t[i];
+        }
+        for (int i = 0; i < m; i++) {
+            if (s[i] < t[i]) {
+                return Long.parseLong(String.valueOf(t)); 
+            } else if (s[i] > t[i]) { 
+                //如果s[i] > t[i]，因为要找大于s的，因此，t要增加
+                //t:1331，t从中间往位置0，增加1，这样增加幅度最小
+                for (int j = (m - 1) / 2; j >= 0; j--) {
+                    //如果t该值是9，结果等于0,在往0走即可，只要前半部分，所以只针对前半部分+1，
+                    if (++t[j] > '9') {//t:1431
+                        t[j] = '0';
+                    } else {
+                        break;
+                    }
+                }
+                // make it palindrome again
+                //t:1441,mirror前半部分
+                for (int k = 0; k < m / 2; k++) {
+                    t[m - 1 - k] = t[k];
+                }
+                //return 1441
+                return Long.parseLong(String.valueOf(t)); 
+            }
+        }
+        return Long.parseLong(String.valueOf(t));    
+    }
+    //找比该值小的最近回文
+
+    public Long findLowerPalindrome(Long limit) {
+        String n = Long.toString(limit);
+        char[] s = n.toCharArray();
+        int m = s.length;
+        //t:把t前半部分mirror后半部分，1341=》1331
+        char[] t = Arrays.copyOf(s, m);
+        for (int i = 0; i < m / 2; i++) {
+            t[m - 1 - i] = t[i];
+        }
+        System.out.println(t);
+        for (int i = 0; i < m; i++) {
+
+            if (s[i] > t[i]) {
+                //s:1342, t: 1331 i = 2 s>t return 1331
+                
+                return Long.parseLong(String.valueOf(t)); 
+            } else if (s[i] < t[i]) {
+                //find t < s, so if t[i] > s[i]=> need to decrease t
+                System.out.println("s="+String.valueOf(s));
+                for (int j = (m - 1) / 2; j >= 0; j--) {
+                    if (--t[j] < '0') {
+                        t[j] = '9';
+                    } else {
+                        break;
+                    }
+                }
+                //如果第一个是0，后面的就是，比如0000，=》999
+                if (t[0] == '0') {
+                    char[] a = new char[m - 1];
+                    Arrays.fill(a, '9');
+                    return Long.parseLong(String.valueOf(a)); 
+                }
+                // make it palindrome again
+                for (int k = 0; k < m / 2; k++) {
+                    t[m - 1 - k] = t[k];
+                }
+                return Long.parseLong(String.valueOf(t)); 
+            }
+        }
+         return Long.parseLong(String.valueOf(t));  
+    }
+}
+//方法二：
 public class Solution {
     public String mirroring(String s) {
         String x = s.substring(0, (s.length()) / 2);
@@ -436,6 +534,38 @@ class Solution {
         return res;
     }
 }
+
+//method 2: 处理end > start的情况，如果没有交叠的情况，就直接放进res里面
+    public List<Interval> merge(List<Interval> intervals) {
+        // write your code here
+        if(intervals == null || intervals.size() == 0) {
+            return intervals;
+        }
+        PriorityQueue<Interval> pq = new PriorityQueue<>(intervals.size(), new Comparator<Interval>(){
+                @Override
+                public int compare(Interval o1, Interval o2) {
+                    return o1.start - o2.start;
+                }
+            });
+        for(Interval inter : intervals) {
+            pq.offer(inter);
+        }
+        List<Interval> res = new ArrayList<>();
+        
+        while(!pq.isEmpty()) {
+            Interval tp = pq.poll();
+            int end = tp.end;
+            if(!pq.isEmpty() && tp.end >= pq.peek().start) {
+                tp.end = Math.max(tp.end, pq.poll().end);
+                pq.offer(tp);
+            }else {
+                res.add(tp);
+            }
+            //
+        }
+        return res;
+        
+    }
 /*
 238.
 Product of Array Except Self
