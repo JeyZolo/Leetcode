@@ -1,0 +1,154 @@
+//union find
+public class ConnectingGraph3 {
+	int[] father = null;
+	int count = 0;
+
+	public ConnectingGraph3(int n) {
+		father = new int[n+1];
+
+		for(int i = 1; i <= n; i++) {
+			father[i] = i;
+		}
+        count = n;
+	}
+
+	public int find(int a) {
+		int root = father[a];
+		if(root == a)
+			return a;
+		return father[a] = find(root);
+	}
+	public void connect(int a, int b) {
+        
+        if(find(a) != find(b)) {
+        	int fa = find(a);
+        	int fb = find(b);
+        	father[fa] = fb;
+        	count--;
+
+        }
+
+    }
+
+    /**
+     * @return: An integer
+     */
+    public int query() {
+        // write your code here
+        return count;
+    }
+}
+
+public class ConnectingGraph2 {
+    /*
+    * @param n: An integer
+    /*
+    * @param n: An integer
+    */
+    int[] father = null;
+    //HashMap<Integer,Integer> map;
+    int n;
+    public ConnectingGraph2(int n) {
+        // do intialization if necessary
+        father = new int[n+1];
+        for(int i = 1; i <= n; i++) {
+        	father[i] = i;
+        }
+        //map = new HashMap<>();
+        this.n = n;
+    }
+
+    /*
+     * @param a: An integer
+     * @param b: An integer
+     * @return: nothing
+     */
+
+    public int find(int a) {
+    	if(father[a] == a)
+    		return a;
+    	return father[a] = find(father[a]);
+
+    }
+    public void connect(int a, int b) {
+        
+        int root_a = find(a);
+        int root_b = find(b);
+        if(root_a != root_b) {
+        	father[root_a] = root_b;
+        }
+    }
+
+    /*
+     * @param a: An integer
+     * @return: An integer
+     */
+    public int query(int a) {
+    	int root = find(a);
+    	int count = 0;
+        for(int i = 1; i <= n;i++) {
+        	if(find(i) == root) {
+        		count++;
+        	}
+        }
+        return count;
+
+    }
+}
+
+public class ConnectingGraph2 {
+    /*
+    * @param n: An integer
+    /*
+    * @param n: An integer
+    */
+    int[] father = null;
+    int[] size = null;
+    //HashMap<Integer,Integer> map;
+    int n;
+    public ConnectingGraph2(int n) {
+        // do intialization if necessary
+        father = new int[n + 1];
+        size = new int[n + 1];
+        for(int i = 1; i <= n; i++) {
+        	father[i] = i;
+        	size[i] = 1;
+        }
+        //map = new HashMap<>();
+        this.n = n;
+        
+    }
+
+    /*
+     * @param a: An integer
+     * @param b: An integer
+     * @return: nothing
+     */
+
+    public int find(int a) {
+    	if(father[a] == a)
+    		return a;
+    	return father[a] = find(father[a]);
+
+    }
+    public void connect(int a, int b) {
+        // write your code here
+        int root_a = find(a);
+        int root_b = find(b);
+        if(root_a != root_b) {
+        	father[root_a] = root_b;
+        	size[root_b] += size[root_a];
+        }
+    }
+
+    /*
+     * @param a: An integer
+     * @return: An integer
+     */
+    public int query(int a) {
+    	int root = find(a);
+    	int count = 0;
+        return size[root];
+
+    }
+}
